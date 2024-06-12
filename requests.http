@@ -20,3 +20,34 @@ Content-Type: application/json
   "couponCode": "D15",
   "paymentProcessor": "paypal"
 }
+
+### Create Discount Coupon
+POST http://127.0.0.1:8337/discounts
+Accept: application/json
+Content-Type: application/json
+
+{
+  "couponCode": "D150",
+  "discount": 150
+}
+
+### Create Product
+POST http://127.0.0.1:8337/products
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Huawei Phone",
+  "price": "zxczx"
+}
+
+### Create Tax
+POST http://127.0.0.1:8337/taxes
+Accept: application/json
+Content-Type: application/json
+
+{
+  "countryName": "Греция",
+  "countryCode": "GR",
+  "taxRate": 24.0
+}
