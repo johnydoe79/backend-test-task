@@ -10,7 +10,6 @@ use App\Validator\EntityExists;
 use App\Validator\TaxNumber;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -53,13 +52,15 @@ class CalculationController extends AbstractController
         $rawPrice = $entityManager->getRepository(Product::class)->find($data['product'])->getPriceInEuro();
         if (isset($data['couponCode'])) {
             $discount = $entityManager->getRepository(DiscountCoupon::class)->find($data['couponCode'])->getDiscount();
+            $discountType = $entityManager->getRepository(DiscountCoupon::class)->find($data['couponCode'])->getCoupounType()->getCode();
         } else {
             $discount = 0;
+            $discountType = '';
         }
         $taxRate = $entityManager->getRepository(Tax::class)->findOneBy(['countryCode' => $countryCode])->getTaxRate();
 
         //Рассчитываем скидку
-        $finalPrice = PriceCalculateService::calculatePrice($rawPrice, $taxRate, $discount);
+        $finalPrice = PriceCalculateService::calculatePrice($rawPrice, $taxRate, $discount, $discountType);
 
         // Возвращаем ответ с кодом 201 (Created)
         return new Response('Final price is ' . $finalPrice, Response::HTTP_OK);

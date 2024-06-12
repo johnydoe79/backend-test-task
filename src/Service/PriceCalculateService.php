@@ -6,9 +6,14 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PriceCalculateService
 {
-    public static function calculatePrice(float $rawPrice, float $taxRate, float $discount): float
+    public static function calculatePrice(float $rawPrice, float $taxRate, float $discount, string $discountType): float
     {
-        return $rawPrice*(1-$discount/100)*(1+$taxRate/100);
+        $finalPrice = match ($discountType) {
+            'fix' => ($rawPrice-$discount)*(1+$taxRate/100),
+            'percent' => $rawPrice*(1-$discount/100)*(1+$taxRate/100),
+            default => $rawPrice*(1+$taxRate/100)
+        };
+        return $finalPrice;
     }
 
 }
