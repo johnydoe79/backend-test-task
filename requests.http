@@ -21,14 +21,15 @@ Content-Type: application/json
   "paymentProcessor": "paypal"
 }
 
-### Create Discount Coupon
+### Create Discount Coupon (Coupon types, for example, can be 'fix' and 'percent')
 POST http://127.0.0.1:8337/discounts
 Accept: application/json
 Content-Type: application/json
 
 {
   "couponCode": "D150",
-  "discount": 150
+  "discount": 150,
+  "couponType": "percent"
 }
 
 ### Create Product

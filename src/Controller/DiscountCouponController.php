@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\DiscountCoupon;
+use App\Validator\EntityExists;
 use App\Validator\Percent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,14 +33,24 @@ class DiscountCouponController extends AbstractController
         // Получаем данные из POST запроса
         $data = json_decode($request->getContent(), true);
 
+        // Проверка значения couponType
+        $couponType = $data['couponType'] ?? null;
+
+        // Собираем наборы валидаций с учетом значения couponType
+        $discountConstraints = [
+            new Assert\NotBlank(['message' => 'The value of discount must not be blank.']),
+            new Assert\Type(['type' => 'numeric', 'message' => 'The discount must be a numeric value.']),
+        ];
+
+        if ($couponType === 'percent') {
+            $discountConstraints[] = new Percent();
+        }
+
         // Валидация данных
         $constraints = new Assert\Collection([
             'couponCode' => new Assert\NotBlank(['message' => 'The code of coupon must not be blank.']),
-            'discount' => [
-                new Assert\NotBlank(['message' => 'The value of discount must not be blank.']),
-                new Assert\Type(['type' => 'numeric', 'message' => 'The discount must be a numeric value.']),
-                new Percent(),
-            ],
+            'discount' => $discountConstraints,
+            'couponType' => new EntityExists(['entityClass' => 'App\Entity\CouponType']),
         ]);
 
         $violations = $validator->validate($data, $constraints);
